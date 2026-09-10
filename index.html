@@ -79,86 +79,113 @@
       <a href="#about">About</a><a href="#profiles">Profiles</a><a href="#investing">Investing</a><a href="#apply">Invest</a><a href="#contact">Contact</a>
     </div>
     <div class="nav-actions">
-      <button onclick="openLogin('member')">Member Login</button>
-      <button class="btn dark" onclick="openLogin('admin')">Admin</button>
+      <button id="navMemberLoginBtn" onclick="openLogin('member')">Member Login</button>
+      <button id="navAdminBtn" class="btn dark" onclick="openLogin('admin')">Admin</button>
+      <button id="navProfileBtn" class="btn dark" style="display:none;" onclick="openApplication()">Profile</button>
+      <button id="navLogoutBtn" style="display:none;" onclick="logout()">Logout</button>
     </div>
   </div>
 </nav>
 
-<header class="wrap hero">
-  <div>
-    <div class="eyebrow">Actor · Investor · Builder</div>
-    <h1>Shriyam<br>Bhagnani</h1>
-    <p>An official home for Shriyam's work across acting, early-stage investing, storytelling and community-building — bringing creative craft and founder thinking into one platform.</p>
-    <div class="hero-actions">
-      <a class="btn dark" href="#profiles">Explore Profile</a>
-      <a class="btn" href="#apply">Investor Application →</a>
-    </div>
-  </div>
-  <div class="portrait" aria-label="Placeholder portrait area">
-    <div class="placeholder"></div>
-  </div>
-</header>
-
-<main>
-<section id="about">
-  <div class="wrap">
-    <div class="section-head">
-      <div><div class="eyebrow">01 / About</div><h2>Three sides.<br>One point of view.</h2></div>
-      <p class="lead">The homepage is intentionally editorial: it gives visitors a clear sense of Shriyam before directing them into the relevant path.</p>
-    </div>
-    <div class="profiles" id="profiles">
-      <article class="card"><div class="num">01</div><div><h3>Actor</h3><p>Shriyam's screen credits include <em>Baaghi 2</em>, <em>Batti Gul Meter Chalu</em>, <em>City of Dreams</em> and <em>Aap Jaisa Koi</em>. She is also associated with <em>Sumo Didi</em>, in which she portrays professional sumo wrestler Hetal Dave.</p></div></article>
-      <article class="card"><div class="num">02</div><div><h3>Investor</h3><p>Shriyam describes herself as an investor and strategic advisor, backing early-stage brands and ideas. Her public investment thesis has focused on bootstrapped founders, early demand and a clear path to scale.</p></div></article>
-      <article class="card"><div class="num">03</div><div><h3>Builder &amp; storyteller</h3><p>Beyond acting and investing, Shriyam has spoken publicly about community-building, storytelling and helping founders think about brand, growth and distribution.</p></div></article>
-    </div>
-  </div>
-</section>
-
-<section class="darkband" id="investing">
-  <div class="wrap portfolio">
+<div id="mainView">
+  <header class="wrap hero">
     <div>
-      <div class="eyebrow">02 / Investing</div>
-      <h2>Backing promising founders in India.</h2>
-      <p class="lead" style="margin-top:25px">Shriyam publicly describes her investing work around early-stage Indian businesses. Her stated approach emphasizes strong early demand, repeat customers, founder conviction and the potential to build at scale.</p>
-      <a class="btn" style="margin-top:28px;border-color:#fff;color:#fff" href="#apply">Explore Investor Access →</a>
+      <div class="eyebrow">Actor · Investor · Builder</div>
+      <h1>Shriyam<br>Bhagnani</h1>
+      <p>An official home for Shriyam's work across acting, early-stage investing, storytelling and community-building — bringing creative craft and founder thinking into one platform.</p>
+      <div class="hero-actions">
+        <a class="btn dark" href="#profiles">Explore Profile</a>
+        <a class="btn" href="#apply">Investor Application →</a>
+      </div>
     </div>
-    <div class="principles">
-      <div class="principle"><b>01</b><div><strong>Early conviction</strong><span>High-potential businesses where focused capital and access can accelerate progress.</span></div></div>
-      <div class="principle"><b>02</b><div><strong>Founder first</strong><span>Strong teams, clear thinking, integrity and a willingness to learn.</span></div></div>
-      <div class="principle"><b>03</b><div><strong>India focused</strong><span>Opportunities connected to India's changing consumer, technology and business landscape.</span></div></div>
+    <div class="portrait" aria-label="Placeholder portrait area">
+      <div class="placeholder"></div>
     </div>
-  </div>
-</section>
+  </header>
 
-<section id="apply">
+  <main>
+  <section id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">01 / About</div><h2>Three sides.<br>One point of view.</h2></div>
+        <p class="lead">The homepage is intentionally editorial: it gives visitors a clear sense of Shriyam before directing them into the relevant path.</p>
+      </div>
+      <div class="profiles" id="profiles">
+        <article class="card"><div class="num">01</div><div><h3>Actor</h3><p>Shriyam's screen credits include <em>Baaghi 2</em>, <em>Batti Gul Meter Chalu</em>, <em>City of Dreams</em> and <em>Aap Jaisa Koi</em>. She is also associated with <em>Sumo Didi</em>, in which she portrays professional sumo wrestler Hetal Dave.</p></div></article>
+        <article class="card"><div class="num">02</div><div><h3>Investor</h3><p>Shriyam describes herself as an investor and strategic advisor, backing early-stage brands and ideas. Her public investment thesis has focused on bootstrapped founders, early demand and a clear path to scale.</p></div></article>
+        <article class="card"><div class="num">03</div><div><h3>Builder &amp; storyteller</h3><p>Beyond acting and investing, Shriyam has spoken publicly about community-building, storytelling and helping founders think about brand, growth and distribution.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="darkband" id="investing">
+    <div class="wrap portfolio">
+      <div>
+        <div class="eyebrow">02 / Investing</div>
+        <h2>Backing promising founders in India.</h2>
+        <p class="lead" style="margin-top:25px">Shriyam publicly describes her investing work around early-stage Indian businesses. Her stated approach emphasizes strong early demand, repeat customers, founder conviction and the potential to build at scale.</p>
+        <a class="btn" style="margin-top:28px;border-color:#fff;color:#fff" href="#apply">Explore Investor Access →</a>
+      </div>
+      <div class="principles">
+        <div class="principle"><b>01</b><div><strong>Early conviction</strong><span>High-potential businesses where focused capital and access can accelerate progress.</span></div></div>
+        <div class="principle"><b>02</b><div><strong>Founder first</strong><span>Strong teams, clear thinking, integrity and a willingness to learn.</span></div></div>
+        <div class="principle"><b>03</b><div><strong>India focused</strong><span>Opportunities connected to India's changing consumer, technology and business landscape.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="apply">
+    <div class="wrap">
+      <div class="cta">
+        <div><div class="eyebrow">03 / Investor Application</div><h2>Interested in exploring an investment partnership?</h2></div>
+        <a class="btn dark" href="#" onclick="openApplication();return false;">Apply as an Investor →</a>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">04 / Contact</div><h2>Connect with<br>Shriyam.</h2></div>
+        <p class="lead">Follow Shriyam's work, professional updates and filmography through her public profiles.</p>
+      </div>
+      <div class="profiles">
+        <a class="card" href="https://www.instagram.com/shriyambhagnani/" target="_blank" rel="noopener"><div class="num">SOCIAL</div><div><h3>Instagram ↗</h3><p>@shriyambhagnani</p></div></a>
+        <a class="card" href="https://in.linkedin.com/in/shriyam-bhagnani-7607a834b" target="_blank" rel="noopener"><div class="num">PROFESSIONAL</div><div><h3>LinkedIn ↗</h3><p>Shriyam Bhagnani — Investor · Strategic Advisor · Film Actor</p></div></a>
+        <a class="card" href="https://www.imdb.com/name/nm10496649/" target="_blank" rel="noopener"><div class="num">FILM</div><div><h3>IMDb ↗</h3><p>Credits, filmography and screen work</p></div></a>
+      </div>
+    </div>
+  </section>
+  <footer class="wrap footer">
+    <span>© 2026 Shriyam Bhagnani</span>
+    <span>www.shriyambhagnani.com</span>
+  </footer>
+</div>
+
+<div id="adminView" style="display:none; padding: 110px 0; min-height: 100vh;">
   <div class="wrap">
-    <div class="cta">
-      <div><div class="eyebrow">03 / Investor Application</div><h2>Interested in exploring an investment partnership?</h2></div>
-      <a class="btn dark" href="#" onclick="openApplication();return false;">Apply as an Investor →</a>
+    <div class="section-head" style="margin-bottom: 20px;">
+      <div><h2>Admin Dashboard</h2><p class="lead" style="margin-top:10px;">Review prospective investor applications below.</p></div>
+      <button class="btn dark" onclick="exportCSV()">Export to CSV</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="adminTable" style="width:100%; border-collapse: collapse; text-align: left; background:var(--white); border: 1px solid var(--line);">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--line); background: #f9f8f6;">
+            <th style="padding: 16px;">Name</th>
+            <th style="padding: 16px;">Email</th>
+            <th style="padding: 16px;">Organisation</th>
+            <th style="padding: 16px;">Type</th>
+            <th style="padding: 16px;">Interests</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody">
+        </tbody>
+      </table>
     </div>
   </div>
-</section>
-</main>
-
-
-<section id="contact">
-  <div class="wrap">
-    <div class="section-head">
-      <div><div class="eyebrow">04 / Contact</div><h2>Connect with<br>Shriyam.</h2></div>
-      <p class="lead">Follow Shriyam's work, professional updates and filmography through her public profiles.</p>
-    </div>
-    <div class="profiles">
-      <a class="card" href="https://www.instagram.com/shriyambhagnani/" target="_blank" rel="noopener"><div class="num">SOCIAL</div><div><h3>Instagram ↗</h3><p>@shriyambhagnani</p></div></a>
-      <a class="card" href="https://in.linkedin.com/in/shriyam-bhagnani-7607a834b" target="_blank" rel="noopener"><div class="num">PROFESSIONAL</div><div><h3>LinkedIn ↗</h3><p>Shriyam Bhagnani — Investor · Strategic Advisor · Film Actor</p></div></a>
-      <a class="card" href="https://www.imdb.com/name/nm10496649/" target="_blank" rel="noopener"><div class="num">FILM</div><div><h3>IMDb ↗</h3><p>Credits, filmography and screen work</p></div></a>
-    </div>
-  </div>
-</section>
-<footer class="wrap footer">
-  <span>© 2026 Shriyam Bhagnani</span>
-  <span>www.shriyambhagnani.com</span>
-</footer>
+</div>
 
 <div class="modal" id="loginModal">
   <div class="modal-box">
@@ -166,14 +193,14 @@
     <h3 id="loginTitle">Member Login</h3>
     <p id="loginCopy">Access your member area.</p>
     <div class="tabs">
-      <button id="memberTab" class="tab active" onclick="setLogin('member')">Member</button>
-      <button id="adminTab" class="tab" onclick="setLogin('admin')">Admin</button>
+      <button id="memberTab" class="tab active" onclick="setLogin('member')" type="button">Member</button>
+      <button id="adminTab" class="tab" onclick="setLogin('admin')" type="button">Admin</button>
     </div>
-    <form onsubmit="demoSubmit(event,'loginSuccess')">
+    <form id="loginForm" onsubmit="handleLogin(event)">
       <label>Email</label><input type="email" required placeholder="you@example.com">
       <label>Password</label><input type="password" required placeholder="••••••••">
       <button class="submit">Continue</button>
-      <div class="success" id="loginSuccess">Demo login submitted. Connect this form to your authentication system before publishing.</div>
+      <div class="success" id="loginSuccess">Demo login submitted.</div>
     </form>
   </div>
 </div>
@@ -183,33 +210,157 @@
     <button class="close" onclick="closeModal('applicationModal')">×</button>
     <h3>Investor Application</h3>
     <p>A simple first-touch form for prospective investors or investment partners.</p>
-    <form onsubmit="demoSubmit(event,'appSuccess')">
-      <label>Full name</label><input required placeholder="Your name">
-      <label>Email</label><input type="email" required placeholder="you@example.com">
-      <label>Organisation / fund</label><input placeholder="Company, fund or family office">
+    <form id="applicationForm" onsubmit="handleApplicationSubmit(event)">
+      <label>Full name</label><input id="appName" required placeholder="Your name">
+      <label>Email</label><input id="appEmail" type="email" required placeholder="you@example.com">
+      <label>Organisation / fund</label><input id="appOrg" placeholder="Company, fund or family office">
       <label>Investor type</label>
-      <select><option>Angel investor</option><option>VC / Fund</option><option>Family office</option><option>Strategic investor</option><option>Other</option></select>
-      <label>Tell us what you are looking for</label><textarea placeholder="Stage, sectors, typical ticket size, interests..."></textarea>
+      <select id="appType"><option>Angel investor</option><option>VC / Fund</option><option>Family office</option><option>Strategic investor</option><option>Other</option></select>
+      <label>Tell us what you are looking for</label><textarea id="appInterests" placeholder="Stage, sectors, typical ticket size, interests..."></textarea>
       <button class="submit">Submit application</button>
-      <div class="success" id="appSuccess">Application captured in demo mode. Connect this form to email/CRM/database handling before publishing.</div>
+      <div class="success" id="appSuccess">Application saved locally.</div>
     </form>
   </div>
 </div>
 
 <script>
-function openLogin(type){document.getElementById('loginModal').classList.add('show');setLogin(type)}
-function setLogin(type){
-  const admin=type==='admin';
-  document.getElementById('loginTitle').textContent=admin?'Admin Login':'Member Login';
-  document.getElementById('loginCopy').textContent=admin?'Secure access for site administration.':'Access your member area.';
-  document.getElementById('adminTab').classList.toggle('active',admin);
-  document.getElementById('memberTab').classList.toggle('active',!admin);
-  document.getElementById('loginSuccess').style.display='none';
+let currentLoginType = 'member';
+
+function openLogin(type){
+  document.getElementById('loginModal').classList.add('show');
+  setLogin(type);
 }
-function openApplication(){document.getElementById('applicationModal').classList.add('show')}
-function closeModal(id){document.getElementById(id).classList.remove('show')}
-function demoSubmit(e,id){e.preventDefault();document.getElementById(id).style.display='block'}
-window.onclick=function(e){if(e.target.classList.contains('modal'))e.target.classList.remove('show')}
+
+function setLogin(type){
+  currentLoginType = type;
+  const admin = type === 'admin';
+  document.getElementById('loginTitle').textContent = admin ? 'Admin Login' : 'Member Login';
+  document.getElementById('loginCopy').textContent = admin ? 'Secure access for site administration.' : 'Access your member area.';
+  document.getElementById('adminTab').classList.toggle('active', admin);
+  document.getElementById('memberTab').classList.toggle('active', !admin);
+  document.getElementById('loginSuccess').style.display = 'none';
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  closeModal('loginModal');
+  
+  if (currentLoginType === 'member') {
+    document.getElementById('navMemberLoginBtn').style.display = 'none';
+    document.getElementById('navAdminBtn').style.display = 'none';
+    document.getElementById('navProfileBtn').style.display = 'inline-block';
+    document.getElementById('navLogoutBtn').style.display = 'inline-block';
+  } else if (currentLoginType === 'admin') {
+    document.getElementById('mainView').style.display = 'none';
+    document.getElementById('adminView').style.display = 'block';
+    
+    document.getElementById('navMemberLoginBtn').style.display = 'none';
+    document.getElementById('navAdminBtn').style.display = 'none';
+    document.getElementById('navProfileBtn').style.display = 'none';
+    document.getElementById('navLogoutBtn').style.display = 'inline-block';
+
+    loadAdminData();
+  }
+}
+
+function logout() {
+  document.getElementById('mainView').style.display = 'block';
+  document.getElementById('adminView').style.display = 'none';
+  
+  document.getElementById('navMemberLoginBtn').style.display = 'inline-block';
+  document.getElementById('navAdminBtn').style.display = 'inline-block';
+  document.getElementById('navProfileBtn').style.display = 'none';
+  document.getElementById('navLogoutBtn').style.display = 'none';
+  
+  document.getElementById('loginForm').reset();
+}
+
+function openApplication(){
+  document.getElementById('appSuccess').style.display = 'none';
+  document.getElementById('applicationModal').classList.add('show');
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+function handleApplicationSubmit(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('appName').value;
+  const email = document.getElementById('appEmail').value;
+  const org = document.getElementById('appOrg').value;
+  const type = document.getElementById('appType').value;
+  const interests = document.getElementById('appInterests').value;
+  
+  const application = { name, email, org, type, interests };
+  
+  const existing = JSON.parse(localStorage.getItem('investorApplications') || '[]');
+  existing.push(application);
+  localStorage.setItem('investorApplications', JSON.stringify(existing));
+  
+  document.getElementById('appSuccess').style.display = 'block';
+  document.getElementById('applicationForm').reset();
+  
+  setTimeout(() => {
+    closeModal('applicationModal');
+  }, 1500);
+}
+
+function loadAdminData() {
+  const tbody = document.getElementById('adminTableBody');
+  tbody.innerHTML = '';
+  
+  const data = JSON.parse(localStorage.getItem('investorApplications') || '[]');
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding: 16px; text-align:center;">No applications found.</td></tr>';
+    return;
+  }
+  
+  data.forEach(app => {
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid var(--line)';
+    
+    ['name', 'email', 'org', 'type', 'interests'].forEach(key => {
+      const td = document.createElement('td');
+      td.style.padding = '16px';
+      td.textContent = app[key];
+      tr.appendChild(td);
+    });
+    
+    tbody.appendChild(tr);
+  });
+}
+
+function exportCSV() {
+  const data = JSON.parse(localStorage.getItem('investorApplications') || '[]');
+  if (data.length === 0) {
+    alert("No data to export.");
+    return;
+  }
+  
+  const headers = ['Name', 'Email', 'Organisation', 'Type', 'Interests'];
+  const rows = data.map(app => [
+    `"${(app.name || '').replace(/"/g, '""')}"`,
+    `"${(app.email || '').replace(/"/g, '""')}"`,
+    `"${(app.org || '').replace(/"/g, '""')}"`,
+    `"${(app.type || '').replace(/"/g, '""')}"`,
+    `"${(app.interests || '').replace(/"/g, '""')}"`
+  ].join(','));
+  
+  const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + "\n" + rows.join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "investor_applications.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+window.onclick = function(e){
+  if(e.target.classList.contains('modal')) e.target.classList.remove('show');
+}
 </script>
 </body>
 </html>
