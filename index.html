@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Shriyam Bhagnani — Actor & Investor</title>
 <meta name="description" content="Official website of Shriyam Bhagnani — actor, entrepreneur and investor supporting promising startups in India." />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --ink:#111111; --muted:#6d6a66; --paper:#f5f1ea; --white:#fffdf9;
@@ -57,8 +58,6 @@
   .modal-box{width:min(420px,100%);background:var(--white);padding:34px;border:1px solid var(--line)}
   .modal-box h3{font:500 36px Georgia,serif;margin:0 0 8px}
   .modal-box p{color:var(--muted);font-size:14px}
-  .tabs{display:flex;gap:8px;margin:22px 0}
-  .tab.active{background:var(--dark);color:#fff}
   label{font-size:12px;color:#57514b;display:block;margin:14px 0 6px}
   input,textarea,select{width:100%;padding:13px;border:1px solid #cfc6bc;background:white;border-radius:4px;font:inherit}
   textarea{min-height:115px;resize:vertical}
@@ -79,8 +78,7 @@
       <a href="#about">About</a><a href="#profiles">Profiles</a><a href="#investing">Investing</a><a href="#apply">Invest</a><a href="#contact">Contact</a>
     </div>
     <div class="nav-actions">
-      <button id="navMemberLoginBtn" onclick="openLogin('member')">Member Login</button>
-      <button id="navAdminBtn" class="btn dark" onclick="openLogin('admin')">Admin</button>
+      <button id="navLoginBtn" onclick="openLogin()">Login</button>
       <button id="navProfileBtn" class="btn dark" style="display:none;" onclick="openApplication()">Profile</button>
       <button id="navLogoutBtn" style="display:none;" onclick="logout()">Logout</button>
     </div>
@@ -138,7 +136,7 @@
     <div class="wrap">
       <div class="cta">
         <div><div class="eyebrow">03 / Investor Application</div><h2>Interested in exploring an investment partnership?</h2></div>
-        <a class="btn dark" href="#" onclick="openApplication();return false;">Apply as an Investor →</a>
+        <a class="btn dark" href="#" onclick="handleApplyClick();return false;">Apply as an Investor →</a>
       </div>
     </div>
   </section>
@@ -190,17 +188,23 @@
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <button class="close" onclick="closeModal('loginModal')">×</button>
-    <h3 id="loginTitle">Member Login</h3>
+    <h3 id="loginTitle">Login</h3>
     <p id="loginCopy">Access your member area.</p>
-    <div class="tabs">
-      <button id="memberTab" class="tab active" onclick="setLogin('member')" type="button">Member</button>
-      <button id="adminTab" class="tab" onclick="setLogin('admin')" type="button">Admin</button>
-    </div>
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <label>Email</label><input type="email" required placeholder="you@example.com">
-      <label>Password</label><input type="password" required placeholder="••••••••">
-      <button class="submit">Continue</button>
-      <div class="success" id="loginSuccess">Demo login submitted.</div>
+
+    <div id="googleSignInBtn" style="margin-bottom: 20px; display: flex; justify-content: center;"></div>
+    
+    <div style="text-align:center; font-size:12px; color:var(--muted); margin-bottom: 10px;">or use your email</div>
+
+    <form id="loginForm" onsubmit="handleAuth(event)">
+      <label>Email</label>
+      <input type="email" id="loginEmail" required placeholder="you@example.com" onblur="checkEmail()">
+      
+      <div id="passwordField" style="display:none;">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      
+      <button class="submit" id="authSubmitBtn" style="display:none;">Continue</button>
     </form>
   </div>
 </div>
@@ -224,59 +228,168 @@
 </div>
 
 <script>
-let currentLoginType = 'member';
-
-function openLogin(type){
+function openLogin(){
+  document.getElementById('loginTitle').textContent = 'Login';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('passwordField').style.display = 'none';
+  document.getElementById('authSubmitBtn').style.display = 'none';
+  document.getElementById('authSubmitBtn').textContent = 'Continue';
   document.getElementById('loginModal').classList.add('show');
-  setLogin(type);
 }
 
-function setLogin(type){
-  currentLoginType = type;
-  const admin = type === 'admin';
-  document.getElementById('loginTitle').textContent = admin ? 'Admin Login' : 'Member Login';
-  document.getElementById('loginCopy').textContent = admin ? 'Secure access for site administration.' : 'Access your member area.';
-  document.getElementById('adminTab').classList.toggle('active', admin);
-  document.getElementById('memberTab').classList.toggle('active', !admin);
-  document.getElementById('loginSuccess').style.display = 'none';
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-  closeModal('loginModal');
+function checkEmail() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) {
+    document.getElementById('passwordField').style.display = 'none';
+    document.getElementById('authSubmitBtn').style.display = 'none';
+    return;
+  }
   
-  if (currentLoginType === 'member') {
-    document.getElementById('navMemberLoginBtn').style.display = 'none';
-    document.getElementById('navAdminBtn').style.display = 'none';
-    document.getElementById('navProfileBtn').style.display = 'inline-block';
-    document.getElementById('navLogoutBtn').style.display = 'inline-block';
-  } else if (currentLoginType === 'admin') {
-    document.getElementById('mainView').style.display = 'none';
-    document.getElementById('adminView').style.display = 'block';
-    
-    document.getElementById('navMemberLoginBtn').style.display = 'none';
-    document.getElementById('navAdminBtn').style.display = 'none';
-    document.getElementById('navProfileBtn').style.display = 'none';
-    document.getElementById('navLogoutBtn').style.display = 'inline-block';
-
-    loadAdminData();
+  if (email === 'admin@example.com') {
+    document.getElementById('loginTitle').textContent = 'Admin Login';
+    document.getElementById('passwordField').style.display = 'block';
+    document.getElementById('authSubmitBtn').style.display = 'block';
+    document.getElementById('authSubmitBtn').textContent = 'Login';
+    return;
+  }
+  
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const exists = users.find(u => u.email === email);
+  
+  document.getElementById('passwordField').style.display = 'block';
+  document.getElementById('authSubmitBtn').style.display = 'block';
+  if (exists) {
+    document.getElementById('loginTitle').textContent = 'Login';
+    document.getElementById('authSubmitBtn').textContent = 'Login';
+  } else {
+    document.getElementById('loginTitle').textContent = 'Create Account';
+    document.getElementById('authSubmitBtn').textContent = 'Sign Up';
   }
 }
 
+function handleAuth(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  
+  if (email === 'admin@example.com') {
+     performLogin(email);
+     return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const existingUser = users.find(u => u.email === email);
+
+  if (!existingUser) {
+    // Create account
+    users.push({ email, pass });
+    localStorage.setItem('users', JSON.stringify(users));
+    performLogin(email);
+  } else {
+    // Login
+    if (existingUser.pass === pass) {
+      performLogin(email);
+    } else {
+      alert("Incorrect password!");
+    }
+  }
+}
+
+function handleCredentialResponse(response) {
+  try {
+    const base64Url = response.credential.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const payload = JSON.parse(jsonPayload);
+    const email = payload.email;
+    
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (!users.find(u => u.email === email)) {
+      users.push({ email, pass: 'google_sso' });
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+    
+    performLogin(email);
+  } catch (e) {
+    console.error("Error decoding JWT", e);
+  }
+}
+
+function performLogin(email) {
+  closeModal('loginModal');
+  localStorage.setItem('currentSession', email);
+  updateUIForSession(email);
+}
+
 function logout() {
+  localStorage.removeItem('currentSession');
   document.getElementById('mainView').style.display = 'block';
   document.getElementById('adminView').style.display = 'none';
   
-  document.getElementById('navMemberLoginBtn').style.display = 'inline-block';
-  document.getElementById('navAdminBtn').style.display = 'inline-block';
+  document.getElementById('navLoginBtn').style.display = 'inline-block';
   document.getElementById('navProfileBtn').style.display = 'none';
   document.getElementById('navLogoutBtn').style.display = 'none';
+}
+
+function updateUIForSession(email) {
+  if (!email) return;
   
-  document.getElementById('loginForm').reset();
+  document.getElementById('navLoginBtn').style.display = 'none';
+  
+  if (email === 'admin@example.com') {
+    document.getElementById('mainView').style.display = 'none';
+    document.getElementById('adminView').style.display = 'block';
+    
+    document.getElementById('navProfileBtn').style.display = 'none';
+    document.getElementById('navLogoutBtn').style.display = 'inline-block';
+    
+    loadAdminData();
+  } else {
+    document.getElementById('mainView').style.display = 'block';
+    document.getElementById('adminView').style.display = 'none';
+    
+    document.getElementById('navProfileBtn').style.display = 'inline-block';
+    document.getElementById('navLogoutBtn').style.display = 'inline-block';
+  }
+}
+
+function handleApplyClick() {
+  const session = localStorage.getItem('currentSession');
+  if (session) {
+    openApplication();
+  } else {
+    openLogin();
+  }
 }
 
 function openApplication(){
   document.getElementById('appSuccess').style.display = 'none';
+  
+  const session = localStorage.getItem('currentSession');
+  if (session && session !== 'admin@example.com') {
+    document.getElementById('appEmail').value = session;
+    
+    const applications = JSON.parse(localStorage.getItem('investorApplications') || '[]');
+    const userApp = applications.find(a => a.email === session);
+    
+    if (userApp) {
+      document.getElementById('appName').value = userApp.name || '';
+      document.getElementById('appOrg').value = userApp.org || '';
+      document.getElementById('appType').value = userApp.type || 'Angel investor';
+      document.getElementById('appInterests').value = userApp.interests || '';
+    } else {
+      document.getElementById('appName').value = '';
+      document.getElementById('appOrg').value = '';
+      document.getElementById('appType').value = 'Angel investor';
+      document.getElementById('appInterests').value = '';
+    }
+  }
+  
   document.getElementById('applicationModal').classList.add('show');
 }
 
@@ -296,11 +409,18 @@ function handleApplicationSubmit(e) {
   const application = { name, email, org, type, interests };
   
   const existing = JSON.parse(localStorage.getItem('investorApplications') || '[]');
-  existing.push(application);
+  const session = localStorage.getItem('currentSession') || email;
+  
+  const index = existing.findIndex(a => a.email === session || a.email === email);
+  if (index !== -1) {
+    existing[index] = application;
+  } else {
+    existing.push(application);
+  }
+  
   localStorage.setItem('investorApplications', JSON.stringify(existing));
   
   document.getElementById('appSuccess').style.display = 'block';
-  document.getElementById('applicationForm').reset();
   
   setTimeout(() => {
     closeModal('applicationModal');
@@ -361,6 +481,24 @@ function exportCSV() {
 window.onclick = function(e){
   if(e.target.classList.contains('modal')) e.target.classList.remove('show');
 }
+
+window.addEventListener('load', () => {
+  if (window.google) {
+    google.accounts.id.initialize({
+      client_id: "YOUR_GOOGLE_CLIENT_ID",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("googleSignInBtn"),
+      { theme: "outline", size: "large", width: "100%" }
+    );
+  }
+  
+  const session = localStorage.getItem('currentSession');
+  if (session) {
+    updateUIForSession(session);
+  }
+});
 </script>
 </body>
 </html>
