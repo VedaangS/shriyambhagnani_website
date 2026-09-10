@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shriyam Bhagnani — Actor & Investor</title>
+<meta name="description" content="Official website of Shriyam Bhagnani — actor, entrepreneur and investor supporting promising startups in India." />
+<style>
+  :root{
+    --ink:#111111; --muted:#6d6a66; --paper:#f5f1ea; --white:#fffdf9;
+    --line:#d8d0c6; --accent:#9b6847; --dark:#191715;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(1160px,92%);margin:auto}
+  nav{position:sticky;top:0;z-index:20;background:rgba(245,241,234,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(216,208,198,.7)}
+  .nav-in{height:76px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:Georgia,serif;font-size:22px;letter-spacing:.02em}
+  .navlinks{display:flex;gap:26px;font-size:14px}
+  .nav-actions{display:flex;gap:9px}
+  button,.btn{border:1px solid var(--ink);padding:11px 16px;border-radius:999px;background:transparent;cursor:pointer;font:inherit;font-size:13px}
+  .btn.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+  .hero{min-height:700px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:86px 0}
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.17em;color:var(--accent);font-weight:700}
+  h1{font-family:Georgia,serif;font-size:clamp(55px,8vw,104px);font-weight:500;line-height:.92;margin:18px 0 28px;letter-spacing:-.045em}
+  .hero p{max-width:560px;color:var(--muted);font-size:18px}
+  .hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+  .portrait{height:560px;background:linear-gradient(145deg,#c6b39f,#5e534b);border-radius:2px 2px 110px 2px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;position:relative}
+  .portrait::after{content:"SHRIYAM";position:absolute;right:28px;top:28px;color:rgba(255,255,255,.75);font-size:12px;letter-spacing:.18em}
+  .placeholder{width:74%;height:84%;background:linear-gradient(180deg,#2c2723,#111);border-radius:48% 48% 4% 4%;opacity:.92;position:relative}
+  .placeholder:before{content:"";position:absolute;top:-55px;left:22%;width:56%;height:120px;background:#211c19;border-radius:50%}
+  .placeholder:after{content:"Portrait / photo";position:absolute;left:50%;bottom:26px;transform:translateX(-50%);color:#eee;font-size:12px;white-space:nowrap;opacity:.8}
+  section{padding:110px 0}
+  .section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:45px}
+  h2{font:500 clamp(38px,5vw,62px)/1 Georgia,serif;margin:0;letter-spacing:-.03em}
+  .lead{max-width:470px;color:var(--muted)}
+  .profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:var(--white);padding:32px;min-height:310px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}
+  .num{font:16px Georgia,serif;color:var(--accent)}
+  .card h3{font:32px Georgia,serif;font-weight:500;margin:20px 0 10px}
+  .card p{color:var(--muted);font-size:15px}
+  .darkband{background:var(--dark);color:#fffdf9}
+  .darkband .lead{color:#c9c3bb}
+  .portfolio{display:grid;grid-template-columns:1.2fr .8fr;gap:65px;align-items:start}
+  .principles{border-top:1px solid #3b3834}
+  .principle{display:flex;gap:26px;padding:24px 0;border-bottom:1px solid #3b3834}
+  .principle b{width:28px;color:#c29a7d}
+  .principle strong{display:block;margin-bottom:6px}
+  .principle span{color:#bdb7ae;font-size:14px}
+  .cta{background:#e6d7c9;padding:70px;border:1px solid #d1bfae;display:flex;align-items:center;justify-content:space-between;gap:35px}
+  .cta h2{max-width:650px}
+  .footer{padding:45px 0;color:#777067;font-size:13px;display:flex;justify-content:space-between;gap:20px}
+  .modal{position:fixed;inset:0;background:rgba(17,17,17,.58);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal.show{display:flex}
+  .modal-box{width:min(420px,100%);background:var(--white);padding:34px;border:1px solid var(--line)}
+  .modal-box h3{font:500 36px Georgia,serif;margin:0 0 8px}
+  .modal-box p{color:var(--muted);font-size:14px}
+  .tabs{display:flex;gap:8px;margin:22px 0}
+  .tab.active{background:var(--dark);color:#fff}
+  label{font-size:12px;color:#57514b;display:block;margin:14px 0 6px}
+  input,textarea,select{width:100%;padding:13px;border:1px solid #cfc6bc;background:white;border-radius:4px;font:inherit}
+  textarea{min-height:115px;resize:vertical}
+  form .submit{width:100%;margin-top:16px;background:var(--dark);color:#fff;border:none}
+  .close{float:right;border:0;padding:0;font-size:25px}
+  .success{display:none;margin-top:14px;padding:12px;background:#ece8e1;font-size:13px}
+  @media(max-width:820px){
+    .navlinks{display:none}.hero,.portfolio{grid-template-columns:1fr}.hero{padding:58px 0}.portrait{height:440px}
+    .profiles{grid-template-columns:1fr}.cta{padding:40px;display:block}.cta .btn{display:inline-block;margin-top:20px}.section-head{display:block}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#">Shriyam Bhagnani</a>
+    <div class="navlinks">
+      <a href="#about">About</a><a href="#profiles">Profiles</a><a href="#investing">Investing</a><a href="#apply">Invest</a><a href="#contact">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <button onclick="openLogin('member')">Member Login</button>
+      <button class="btn dark" onclick="openLogin('admin')">Admin</button>
+    </div>
+  </div>
+</nav>
+
+<header class="wrap hero">
+  <div>
+    <div class="eyebrow">Actor · Investor · Builder</div>
+    <h1>Shriyam<br>Bhagnani</h1>
+    <p>An official home for Shriyam's work across acting, early-stage investing, storytelling and community-building — bringing creative craft and founder thinking into one platform.</p>
+    <div class="hero-actions">
+      <a class="btn dark" href="#profiles">Explore Profile</a>
+      <a class="btn" href="#apply">Investor Application →</a>
+    </div>
+  </div>
+  <div class="portrait" aria-label="Placeholder portrait area">
+    <div class="placeholder"></div>
+  </div>
+</header>
+
+<main>
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div><div class="eyebrow">01 / About</div><h2>Three sides.<br>One point of view.</h2></div>
+      <p class="lead">The homepage is intentionally editorial: it gives visitors a clear sense of Shriyam before directing them into the relevant path.</p>
+    </div>
+    <div class="profiles" id="profiles">
+      <article class="card"><div class="num">01</div><div><h3>Actor</h3><p>Shriyam's screen credits include <em>Baaghi 2</em>, <em>Batti Gul Meter Chalu</em>, <em>City of Dreams</em> and <em>Aap Jaisa Koi</em>. She is also associated with <em>Sumo Didi</em>, in which she portrays professional sumo wrestler Hetal Dave.</p></div></article>
+      <article class="card"><div class="num">02</div><div><h3>Investor</h3><p>Shriyam describes herself as an investor and strategic advisor, backing early-stage brands and ideas. Her public investment thesis has focused on bootstrapped founders, early demand and a clear path to scale.</p></div></article>
+      <article class="card"><div class="num">03</div><div><h3>Builder &amp; storyteller</h3><p>Beyond acting and investing, Shriyam has spoken publicly about community-building, storytelling and helping founders think about brand, growth and distribution.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="darkband" id="investing">
+  <div class="wrap portfolio">
+    <div>
+      <div class="eyebrow">02 / Investing</div>
+      <h2>Backing promising founders in India.</h2>
+      <p class="lead" style="margin-top:25px">Shriyam publicly describes her investing work around early-stage Indian businesses. Her stated approach emphasizes strong early demand, repeat customers, founder conviction and the potential to build at scale.</p>
+      <a class="btn" style="margin-top:28px;border-color:#fff;color:#fff" href="#apply">Explore Investor Access →</a>
+    </div>
+    <div class="principles">
+      <div class="principle"><b>01</b><div><strong>Early conviction</strong><span>High-potential businesses where focused capital and access can accelerate progress.</span></div></div>
+      <div class="principle"><b>02</b><div><strong>Founder first</strong><span>Strong teams, clear thinking, integrity and a willingness to learn.</span></div></div>
+      <div class="principle"><b>03</b><div><strong>India focused</strong><span>Opportunities connected to India's changing consumer, technology and business landscape.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="apply">
+  <div class="wrap">
+    <div class="cta">
+      <div><div class="eyebrow">03 / Investor Application</div><h2>Interested in exploring an investment partnership?</h2></div>
+      <a class="btn dark" href="#" onclick="openApplication();return false;">Apply as an Investor →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div><div class="eyebrow">04 / Contact</div><h2>Connect with<br>Shriyam.</h2></div>
+      <p class="lead">Follow Shriyam's work, professional updates and filmography through her public profiles.</p>
+    </div>
+    <div class="profiles">
+      <a class="card" href="https://www.instagram.com/shriyambhagnani/" target="_blank" rel="noopener"><div class="num">SOCIAL</div><div><h3>Instagram ↗</h3><p>@shriyambhagnani</p></div></a>
+      <a class="card" href="https://in.linkedin.com/in/shriyam-bhagnani-7607a834b" target="_blank" rel="noopener"><div class="num">PROFESSIONAL</div><div><h3>LinkedIn ↗</h3><p>Shriyam Bhagnani — Investor · Strategic Advisor · Film Actor</p></div></a>
+      <a class="card" href="https://www.imdb.com/name/nm10496649/" target="_blank" rel="noopener"><div class="num">FILM</div><div><h3>IMDb ↗</h3><p>Credits, filmography and screen work</p></div></a>
+    </div>
+  </div>
+</section>
+<footer class="wrap footer">
+  <span>© 2026 Shriyam Bhagnani</span>
+  <span>www.shriyambhagnani.com</span>
+</footer>
+
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <button class="close" onclick="closeModal('loginModal')">×</button>
+    <h3 id="loginTitle">Member Login</h3>
+    <p id="loginCopy">Access your member area.</p>
+    <div class="tabs">
+      <button id="memberTab" class="tab active" onclick="setLogin('member')">Member</button>
+      <button id="adminTab" class="tab" onclick="setLogin('admin')">Admin</button>
+    </div>
+    <form onsubmit="demoSubmit(event,'loginSuccess')">
+      <label>Email</label><input type="email" required placeholder="you@example.com">
+      <label>Password</label><input type="password" required placeholder="••••••••">
+      <button class="submit">Continue</button>
+      <div class="success" id="loginSuccess">Demo login submitted. Connect this form to your authentication system before publishing.</div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="applicationModal">
+  <div class="modal-box">
+    <button class="close" onclick="closeModal('applicationModal')">×</button>
+    <h3>Investor Application</h3>
+    <p>A simple first-touch form for prospective investors or investment partners.</p>
+    <form onsubmit="demoSubmit(event,'appSuccess')">
+      <label>Full name</label><input required placeholder="Your name">
+      <label>Email</label><input type="email" required placeholder="you@example.com">
+      <label>Organisation / fund</label><input placeholder="Company, fund or family office">
+      <label>Investor type</label>
+      <select><option>Angel investor</option><option>VC / Fund</option><option>Family office</option><option>Strategic investor</option><option>Other</option></select>
+      <label>Tell us what you are looking for</label><textarea placeholder="Stage, sectors, typical ticket size, interests..."></textarea>
+      <button class="submit">Submit application</button>
+      <div class="success" id="appSuccess">Application captured in demo mode. Connect this form to email/CRM/database handling before publishing.</div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openLogin(type){document.getElementById('loginModal').classList.add('show');setLogin(type)}
+function setLogin(type){
+  const admin=type==='admin';
+  document.getElementById('loginTitle').textContent=admin?'Admin Login':'Member Login';
+  document.getElementById('loginCopy').textContent=admin?'Secure access for site administration.':'Access your member area.';
+  document.getElementById('adminTab').classList.toggle('active',admin);
+  document.getElementById('memberTab').classList.toggle('active',!admin);
+  document.getElementById('loginSuccess').style.display='none';
+}
+function openApplication(){document.getElementById('applicationModal').classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function demoSubmit(e,id){e.preventDefault();document.getElementById(id).style.display='block'}
+window.onclick=function(e){if(e.target.classList.contains('modal'))e.target.classList.remove('show')}
+</script>
+</body>
+</html>
