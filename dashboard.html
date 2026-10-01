@@ -35,6 +35,8 @@
   .login-error{display:none;margin-top:14px;padding:12px;background:#f5ddd5;color:#8c3a2b;font-size:13px}
   .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;text-transform:uppercase;font-weight:600;background:#ece8e1}
   .badge.pending{background:#fff3cd;color:#856404}
+  .doc-pill{display:inline-block;padding:4px 10px;margin:2px;border-radius:999px;font-size:11px;font-weight:600;background:#ece8e1;color:var(--accent);text-decoration:none;border:1px solid #d8d0c6;white-space:nowrap;transition:background 0.2s;}
+  .doc-pill:hover{background:#e3dece;}
   @media(max-width:820px){
     .navlinks{display:none}.section-head{display:block}
   }
@@ -69,6 +71,17 @@
   </div>
 </div>
 
+<!-- Modal for Full Details -->
+<div id="detailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding: 20px;" onclick="if(event.target===this) closeModal()">
+  <div style="background:var(--white); border-radius:12px; width:min(700px, 100%); max-height:85vh; overflow-y:auto; position:relative; padding:32px; border:1px solid var(--line); box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+    <button onclick="closeModal()" style="position:absolute; top:24px; right:24px; background:none; border:none; font-size:28px; cursor:pointer; color:var(--muted); padding:0; line-height:1;">&times;</button>
+    <h3 id="modalCompany" style="margin-top:0; margin-bottom:24px; font-family:Georgia,serif; font-size:26px; color:var(--dark);">Company Name</h3>
+    <div id="modalContent" style="display:grid; gap:20px; font-size:14px; color:var(--ink);">
+      <!-- Content injected here -->
+    </div>
+  </div>
+</div>
+
 <!-- Dashboard View (hidden until login) -->
 <div id="dashboardView" style="display:none; padding: 110px 0; min-height: 100vh;">
   <div class="wrap">
@@ -89,8 +102,9 @@
             <th style="padding: 14px;">Sector</th>
             <th style="padding: 14px;">Valuation</th>
             <th style="padding: 14px;">Ask</th>
-            <th style="padding: 14px;">Deck</th>
+            <th style="padding: 14px;">Documents</th>
             <th style="padding: 14px;">Status</th>
+            <th style="padding: 14px;">Actions</th>
           </tr>
         </thead>
         <tbody id="adminTableBody">
@@ -112,24 +126,100 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 let cachedApplications = [];
 
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
-  document.getElementById('loginView').style.display = 'none';
-  document.getElementById('dashboardView').style.display = 'block';
-  document.getElementById('navActions').innerHTML = '<button class="btn" onclick="logout()">Logout</button>';
-  loadAdminData();
+  
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const submitBtn = document.querySelector('#loginForm .submit');
+  const errorDiv = document.getElementById('loginError');
+  
+  const originalText = submitBtn.innerText;
+  submitBtn.innerText = 'Signing in...';
+  submitBtn.disabled = true;
+  errorDiv.style.display = 'none';
+  
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+  
+  submitBtn.innerText = originalText;
+  submitBtn.disabled = false;
+  
+  if (error) {
+    errorDiv.innerText = error.message;
+    errorDiv.style.display = 'block';
+  } else {
+    errorDiv.style.display = 'none';
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('dashboardView').style.display = 'block';
+    document.getElementById('navActions').innerHTML = '<button class="btn" onclick="logout()">Logout</button>';
+    loadAdminData();
+  }
 }
 
-function logout() {
+async function logout() {
+  await supabaseClient.auth.signOut();
   document.getElementById('dashboardView').style.display = 'none';
   document.getElementById('loginView').style.display = 'block';
   document.getElementById('navActions').innerHTML = '<a class="btn" href="index.html">← Back to Home</a>';
   document.getElementById('loginForm').reset();
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function closeModal() {
+  document.getElementById('detailModal').style.display = 'none';
+}
+
+function viewDetails(index) {
+  const app = cachedApplications[index];
+  document.getElementById('modalCompany').textContent = app.company_name || 'Application Details';
+  
+  const getUrl = (path) => supabaseClient.storage.from('application-documents').getPublicUrl(path).data?.publicUrl;
+  
+  let docsHtml = '';
+  if (app.pitch_deck_url) docsHtml += `<a href="${getUrl(app.pitch_deck_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">📄 Pitch Deck ↗</a>`;
+  if (app.due_diligence_url) docsHtml += `<a href="${getUrl(app.due_diligence_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Due Diligence ↗</a>`;
+  if (app.last_term_sheet_url) docsHtml += `<a href="${getUrl(app.last_term_sheet_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Term Sheet ↗</a>`;
+  if (!docsHtml) docsHtml = '<span style="color:#999;">No documents uploaded</span>';
+
+  const formatVal = (val) => val ? val : '—';
+  const formatCurrency = (val) => val ? Number(val).toLocaleString() : '—';
+  
+  document.getElementById('modalContent').innerHTML = `
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; line-height:1.5;">
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Year Founded</strong><br/> ${formatVal(app.year_founded)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Website</strong><br/> ${app.website_link ? `<a href="${app.website_link}" target="_blank" style="color:var(--accent);text-decoration:underline;">${app.website_link}</a>` : '—'}</div>
+      
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Products / Overview</strong><br/> ${formatVal(app.products_overview)}</div>
+      
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Annual Sales</strong><br/> ${formatCurrency(app.annual_sales)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Total Funding Raised</strong><br/> ${formatCurrency(app.total_funding_raised)}</div>
+      
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">TRL Level</strong><br/> ${formatVal(app.trl_level)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Govt Backed Orders</strong><br/> ${app.govt_backed_orders ? 'Yes (' + formatCurrency(app.govt_orders_amount) + ')' : 'No'}</div>
+      
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Granted</strong><br/> ${app.patent_granted ? 'Yes' : 'No'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Details</strong><br/> ${formatVal(app.patent_details)}</div>
+      
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Founder's Past Experience</strong><br/> ${formatVal(app.founders_experience)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Existing Investors</strong><br/> ${formatVal(app.existing_investors)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Why should we fund your company?</strong><br/> ${formatVal(app.why_fund_us)}</div>
+      
+      <div style="grid-column: 1 / -1; margin-top:10px; padding-top:20px; border-top:1px solid var(--line);">
+        <strong style="color:var(--muted);font-size:12px;text-transform:uppercase;display:block;margin-bottom:8px;">Documents</strong>
+        <div>${docsHtml}</div>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('detailModal').style.display = 'flex';
 }
 
 async function loadAdminData() {
   const tbody = document.getElementById('adminTableBody');
-  tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align:center;">Loading applications from Supabase...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center;">Loading applications from Supabase...</td></tr>';
 
   try {
     const { data, error } = await supabaseClient
@@ -141,20 +231,31 @@ async function loadAdminData() {
     cachedApplications = data || [];
 
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align:center;">No startup applications found in database.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center;">No startup applications found in database.</td></tr>';
       return;
     }
 
     tbody.innerHTML = '';
-    data.forEach(app => {
+    data.forEach((app, index) => {
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid var(--line)';
 
       const valuationText = app.company_valuation ? Number(app.company_valuation).toLocaleString() : '—';
       const askText = app.funding_raising ? Number(app.funding_raising).toLocaleString() : '—';
-      const deckCell = app.pitch_deck_url 
-        ? '<span title=\"' + app.pitch_deck_url + '\">📄 ' + (app.pitch_deck_url.split('/').pop() || 'Deck') + '</span>' 
-        : '—';
+      
+      let docsHtml = '';
+      const getUrl = (path) => supabaseClient.storage.from('application-documents').getPublicUrl(path).data?.publicUrl;
+      
+      if (app.pitch_deck_url) {
+        docsHtml += `<a href="${getUrl(app.pitch_deck_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">📄 Deck ↗</a>`;
+      }
+      if (app.due_diligence_url) {
+        docsHtml += `<a href="${getUrl(app.due_diligence_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">DD Report ↗</a>`;
+      }
+      if (app.last_term_sheet_url) {
+        docsHtml += `<a href="${getUrl(app.last_term_sheet_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Term Sheet ↗</a>`;
+      }
+      if (!docsHtml) docsHtml = '<span style="color:#999;">—</span>';
 
       tr.innerHTML = 
         '<td style=\"padding:14px; font-weight:600;\">' + (app.company_name || '—') + '</td>' +
@@ -163,14 +264,15 @@ async function loadAdminData() {
         '<td style=\"padding:14px;\">' + (app.sector || '—') + '</td>' +
         '<td style=\"padding:14px;\">' + valuationText + '</td>' +
         '<td style=\"padding:14px;\">' + askText + '</td>' +
-        '<td style=\"padding:14px;\">' + deckCell + '</td>' +
-        '<td style=\"padding:14px;\"><span class=\"badge pending\">' + (app.status || 'pending') + '</span></td>';
+        '<td style=\"padding:14px;\">' + docsHtml + '</td>' +
+        '<td style=\"padding:14px;\"><span class=\"badge pending\">' + (app.status || 'pending') + '</span></td>' +
+        '<td style=\"padding:14px;\"><button class=\"btn\" style=\"padding:6px 12px; font-size:12px;\" onclick=\"viewDetails(' + index + ')\">View Full Pitch</button></td>';
 
       tbody.appendChild(tr);
     });
   } catch (err) {
     console.error('Failed to load applications:', err);
-    tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align:center; color:#c0392b;">Failed to load from Supabase: ' + (err.message || 'Unknown error') + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center; color:#c0392b;">Failed to load from Supabase: ' + (err.message || 'Unknown error') + '</td></tr>';
   }
 }
 
@@ -204,6 +306,19 @@ function exportCSV() {
   link.click();
   document.body.removeChild(link);
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('dashboardView').style.display = 'block';
+    document.getElementById('navActions').innerHTML = '<button class="btn" onclick="logout()">Logout</button>';
+    loadAdminData();
+  } else {
+    document.getElementById('dashboardView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  }
+});
 </script>
 </body>
 </html>
