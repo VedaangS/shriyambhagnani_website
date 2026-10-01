@@ -93,18 +93,49 @@
         <button class="btn" onclick="logout()">Logout</button>
       </div>
     </div>
+    <div id="dashboardToolbar" style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; align-items:center; justify-content:space-between; background:var(--white); padding:16px; border:1px solid var(--line); border-radius:8px;">
+      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+        <input type="text" id="searchQuery" placeholder="Search by company or founder..." style="width:260px; padding:8px 12px; font-size:13px;" oninput="renderFilteredApplications()">
+        <select id="statusFilter" style="padding:8px 12px; font-size:13px; border:1px solid #cfc6bc; border-radius:4px; outline:none; background:white; font-family:inherit;" onchange="renderFilteredApplications()">
+          <option value="all">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="under_review">Under Review</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="sectorFilter" style="padding:8px 12px; font-size:13px; border:1px solid #cfc6bc; border-radius:4px; outline:none; background:white; font-family:inherit;" onchange="renderFilteredApplications()">
+          <option value="all">All Sectors</option>
+          <option value="AI & Artificial Intelligence">AI & Artificial Intelligence</option>
+          <option value="Robotics & Automation">Robotics & Automation</option>
+          <option value="Defence Tech & Equipment">Defence Tech & Equipment</option>
+          <option value="Drones & Autonomous Systems">Drones & Autonomous Systems</option>
+          <option value="D2C">D2C</option>
+          <option value="Health">Health</option>
+          <option value="Beauty Care">Beauty Care</option>
+          <option value="Other">Other</option>
+        </select>
+        <select id="sortMetric" style="padding:8px 12px; font-size:13px; border:1px solid #cfc6bc; border-radius:4px; outline:none; background:white; font-family:inherit;" onchange="handleSortSelectChange(this.value)">
+          <option value="date_desc">Date: Newest First</option>
+          <option value="date_asc">Date: Oldest First</option>
+          <option value="valuation_desc">Valuation: High to Low</option>
+          <option value="ask_desc">Funding Ask: High to Low</option>
+          <option value="company_asc">Company: A to Z</option>
+        </select>
+      </div>
+      <div id="resultsCounter" style="font-size:13px; color:var(--muted); font-weight:600;">Showing 0 applications</div>
+    </div>
     <div style="overflow-x:auto;">
       <table id="adminTable" style="width:100%; border-collapse: collapse; text-align: left; background:var(--white); border: 1px solid var(--line); font-size: 14px;">
         <thead>
           <tr style="border-bottom: 2px solid var(--line); background: #f9f8f6;">
-            <th style="padding: 14px;">Company</th>
-            <th style="padding: 14px;">Founder(s)</th>
-            <th style="padding: 14px;">Contact</th>
-            <th style="padding: 14px;">Sector</th>
-            <th style="padding: 14px;">Valuation</th>
-            <th style="padding: 14px;">Ask</th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('company_name')">Company <span class="sort-icon" data-col="company_name" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('founder_names')">Founder(s) <span class="sort-icon" data-col="founder_names" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('contact_number')">Contact <span class="sort-icon" data-col="contact_number" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('sector')">Sector <span class="sort-icon" data-col="sector" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('company_valuation')">Valuation <span class="sort-icon" data-col="company_valuation" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('funding_raising')">Ask <span class="sort-icon" data-col="funding_raising" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
             <th style="padding: 14px;">Documents</th>
-            <th style="padding: 14px;">Status</th>
+            <th style="padding: 14px; cursor: pointer; user-select: none;" onclick="sortByColumn('status')">Status <span class="sort-icon" data-col="status" style="color:#cfc6bc; font-size:12px; margin-left:4px;">⇅</span></th>
             <th style="padding: 14px;">Actions</th>
           </tr>
         </thead>
@@ -126,6 +157,52 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let cachedApplications = [];
+let filteredApplications = [];
+
+let currentSortColumn = 'created_at';
+let currentSortDirection = 'desc';
+
+function handleSortSelectChange(val) {
+  if (val === 'date_desc') { currentSortColumn = 'created_at'; currentSortDirection = 'desc'; }
+  else if (val === 'date_asc') { currentSortColumn = 'created_at'; currentSortDirection = 'asc'; }
+  else if (val === 'valuation_desc') { currentSortColumn = 'company_valuation'; currentSortDirection = 'desc'; }
+  else if (val === 'ask_desc') { currentSortColumn = 'funding_raising'; currentSortDirection = 'desc'; }
+  else if (val === 'company_asc') { currentSortColumn = 'company_name'; currentSortDirection = 'asc'; }
+  updateSortIcons();
+  renderFilteredApplications();
+}
+
+function sortByColumn(field) {
+  if (currentSortColumn === field) {
+    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSortColumn = field;
+    currentSortDirection = (field === 'company_valuation' || field === 'funding_raising' || field === 'created_at') ? 'desc' : 'asc';
+  }
+  
+  const sortSelect = document.getElementById('sortMetric');
+  if (currentSortColumn === 'created_at' && currentSortDirection === 'desc') sortSelect.value = 'date_desc';
+  else if (currentSortColumn === 'created_at' && currentSortDirection === 'asc') sortSelect.value = 'date_asc';
+  else if (currentSortColumn === 'company_valuation' && currentSortDirection === 'desc') sortSelect.value = 'valuation_desc';
+  else if (currentSortColumn === 'funding_raising' && currentSortDirection === 'desc') sortSelect.value = 'ask_desc';
+  else if (currentSortColumn === 'company_name' && currentSortDirection === 'asc') sortSelect.value = 'company_asc';
+  else sortSelect.value = '';
+  
+  updateSortIcons();
+  renderFilteredApplications();
+}
+
+function updateSortIcons() {
+  document.querySelectorAll('.sort-icon').forEach(icon => {
+    icon.textContent = '⇅';
+    icon.style.color = '#cfc6bc';
+  });
+  const activeIcon = document.querySelector(`.sort-icon[data-col="${currentSortColumn}"]`);
+  if (activeIcon) {
+    activeIcon.textContent = currentSortDirection === 'asc' ? '▲' : '▼';
+    activeIcon.style.color = 'var(--accent)';
+  }
+}
 
 async function handleLogin(e) {
   e.preventDefault();
@@ -243,7 +320,7 @@ async function openDoc(event, path) {
 }
 
 function viewDetails(index) {
-  const app = cachedApplications[index];
+  const app = filteredApplications[index];
   document.getElementById('modalCompany').textContent = app.company_name || 'Application Details';
   document.getElementById('modalStatusContainer').innerHTML = getStatusSelectHtml(app.id, app.status);
   
@@ -302,57 +379,95 @@ async function loadAdminData() {
 
     if (error) throw error;
     cachedApplications = data || [];
-
-    if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center;">No startup applications found in database.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = '';
-    data.forEach((app, index) => {
-      const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid var(--line)';
-
-      const valuationText = app.company_valuation ? Number(app.company_valuation).toLocaleString() : '—';
-      const askText = app.funding_raising ? Number(app.funding_raising).toLocaleString() : '—';
-      
-      const makeLink = (path, label) => {
-        return `<a href="${getFileUrl(path)}" onclick="openDoc(event, '${path}')" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:underline; display:inline-block; margin-right:8px; margin-bottom:4px;">📄 Open ${label} ↗</a>`;
-      };
-      
-      let docsHtml = '';
-      if (app.pitch_deck_url) docsHtml += makeLink(app.pitch_deck_url, 'Deck');
-      if (app.due_diligence_url) docsHtml += makeLink(app.due_diligence_url, 'DD Report');
-      if (app.last_term_sheet_url) docsHtml += makeLink(app.last_term_sheet_url, 'Term Sheet');
-      if (!docsHtml) docsHtml = '<span style="color:#999;">—</span>';
-
-      tr.innerHTML = 
-        '<td style=\"padding:14px; font-weight:600;\">' + (app.company_name || '—') + '</td>' +
-        '<td style=\"padding:14px;\">' + (app.founder_names || '—') + '</td>' +
-        '<td style=\"padding:14px;\">' + (app.contact_number || '—') + '</td>' +
-        '<td style=\"padding:14px;\">' + (app.sector || '—') + '</td>' +
-        '<td style=\"padding:14px;\">' + valuationText + '</td>' +
-        '<td style=\"padding:14px;\">' + askText + '</td>' +
-        '<td style=\"padding:14px;\">' + docsHtml + '</td>' +
-        '<td style=\"padding:14px;\">' + getStatusSelectHtml(app.id, app.status) + '</td>' +
-        '<td style=\"padding:14px;\"><button class=\"btn\" style=\"padding:6px 12px; font-size:12px;\" onclick=\"viewDetails(' + index + ')\">View Full Pitch</button></td>';
-
-      tbody.appendChild(tr);
-    });
+    renderFilteredApplications();
   } catch (err) {
     console.error('Failed to load applications:', err);
     tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center; color:#c0392b;">Failed to load from Supabase: ' + (err.message || 'Unknown error') + '</td></tr>';
   }
 }
 
+function renderFilteredApplications() {
+  const query = (document.getElementById('searchQuery')?.value || '').toLowerCase();
+  const status = document.getElementById('statusFilter')?.value || 'all';
+  const sector = document.getElementById('sectorFilter')?.value || 'all';
+
+  filteredApplications = cachedApplications.filter(app => {
+    if (query) {
+      const matchCompany = (app.company_name || '').toLowerCase().includes(query);
+      const matchFounder = (app.founder_names || '').toLowerCase().includes(query);
+      if (!matchCompany && !matchFounder) return false;
+    }
+    if (status !== 'all' && (app.status || 'pending') !== status) return false;
+    if (sector !== 'all' && app.sector !== sector) return false;
+    return true;
+  });
+
+  filteredApplications.sort((a, b) => {
+    let result = 0;
+    if (currentSortColumn === 'created_at') {
+      result = new Date(a.created_at || 0) - new Date(b.created_at || 0);
+    } else if (currentSortColumn === 'company_valuation' || currentSortColumn === 'funding_raising') {
+      result = (Number(a[currentSortColumn]) || 0) - (Number(b[currentSortColumn]) || 0);
+    } else {
+      result = String(a[currentSortColumn] || '').localeCompare(String(b[currentSortColumn] || ''), undefined, { sensitivity: 'base' });
+    }
+    return currentSortDirection === 'desc' ? -result : result;
+  });
+
+  updateSortIcons();
+
+  const counter = document.getElementById('resultsCounter');
+  if (counter) {
+    counter.textContent = `Showing ${filteredApplications.length} application${filteredApplications.length !== 1 ? 's' : ''}`;
+  }
+
+  const tbody = document.getElementById('adminTableBody');
+  if (filteredApplications.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align:center;">No applications match your filter criteria.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '';
+  filteredApplications.forEach((app, index) => {
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid var(--line)';
+
+    const valuationText = app.company_valuation ? Number(app.company_valuation).toLocaleString() : '—';
+    const askText = app.funding_raising ? Number(app.funding_raising).toLocaleString() : '—';
+    
+    const makeLink = (path, label) => {
+      return `<a href="${getFileUrl(path)}" onclick="openDoc(event, '${path}')" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:underline; display:inline-block; margin-right:8px; margin-bottom:4px;">📄 Open ${label} ↗</a>`;
+    };
+    
+    let docsHtml = '';
+    if (app.pitch_deck_url) docsHtml += makeLink(app.pitch_deck_url, 'Deck');
+    if (app.due_diligence_url) docsHtml += makeLink(app.due_diligence_url, 'DD Report');
+    if (app.last_term_sheet_url) docsHtml += makeLink(app.last_term_sheet_url, 'Term Sheet');
+    if (!docsHtml) docsHtml = '<span style="color:#999;">—</span>';
+
+    tr.innerHTML = 
+      '<td style=\"padding:14px; font-weight:600;\">' + (app.company_name || '—') + '</td>' +
+      '<td style=\"padding:14px;\">' + (app.founder_names || '—') + '</td>' +
+      '<td style=\"padding:14px;\">' + (app.contact_number || '—') + '</td>' +
+      '<td style=\"padding:14px;\">' + (app.sector || '—') + '</td>' +
+      '<td style=\"padding:14px;\">' + valuationText + '</td>' +
+      '<td style=\"padding:14px;\">' + askText + '</td>' +
+      '<td style=\"padding:14px;\">' + docsHtml + '</td>' +
+      '<td style=\"padding:14px;\">' + getStatusSelectHtml(app.id, app.status) + '</td>' +
+      '<td style=\"padding:14px;\"><button class=\"btn\" style=\"padding:6px 12px; font-size:12px;\" onclick=\"viewDetails(' + index + ')\">View Full Pitch</button></td>';
+
+    tbody.appendChild(tr);
+  });
+}
+
 function exportCSV() {
-  if (!cachedApplications || cachedApplications.length === 0) {
+  if (!filteredApplications || filteredApplications.length === 0) {
     alert("No data available to export.");
     return;
   }
   
   const headers = ['Company', 'Founders', 'Contact', 'Sector', 'Valuation', 'Ask', 'TRL', 'Govt Orders', 'Patent', 'Pitch Deck', 'Status'];
-  const rows = cachedApplications.map(app => [
+  const rows = filteredApplications.map(app => [
     '\"' + (app.company_name || '').replace(/\"/g, '\"\"') + '\"',
     '\"' + (app.founder_names || '').replace(/\"/g, '\"\"') + '\"',
     '\"' + (app.contact_number || '').replace(/\"/g, '\"\"') + '\"',
