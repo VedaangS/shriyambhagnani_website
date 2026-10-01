@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -172,47 +172,69 @@ function closeModal() {
   document.getElementById('detailModal').style.display = 'none';
 }
 
+function getFileUrl(path) {
+  if (!path) return null;
+  const { data } = supabaseClient.storage.from('application-documents').getPublicUrl(path);
+  return data?.publicUrl || null;
+}
+
+async function openDoc(event, path) {
+  event.preventDefault();
+  try {
+    const { data: signedData, error } = await supabaseClient.storage.from('application-documents').createSignedUrl(path, 3600);
+    if (signedData?.signedUrl) {
+      window.open(signedData.signedUrl, '_blank');
+    } else {
+      window.open(getFileUrl(path), '_blank');
+    }
+  } catch (err) {
+    window.open(getFileUrl(path), '_blank');
+  }
+}
+
 function viewDetails(index) {
   const app = cachedApplications[index];
   document.getElementById('modalCompany').textContent = app.company_name || 'Application Details';
   
-  const getUrl = (path) => supabaseClient.storage.from('application-documents').getPublicUrl(path).data?.publicUrl;
+  const makeLink = (path, label) => {
+    return `<a href="${getFileUrl(path)}" onclick="openDoc(event, '${path}')" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:underline; display:inline-block; margin-right:12px; margin-bottom:4px;">📄 Open ${label} ↗</a>`;
+  };
   
   let docsHtml = '';
-  if (app.pitch_deck_url) docsHtml += `<a href="${getUrl(app.pitch_deck_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">📄 Pitch Deck ↗</a>`;
-  if (app.due_diligence_url) docsHtml += `<a href="${getUrl(app.due_diligence_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Due Diligence ↗</a>`;
-  if (app.last_term_sheet_url) docsHtml += `<a href="${getUrl(app.last_term_sheet_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Term Sheet ↗</a>`;
-  if (!docsHtml) docsHtml = '<span style="color:#999;">No documents uploaded</span>';
+  if (app.pitch_deck_url) docsHtml += makeLink(app.pitch_deck_url, 'Deck');
+  if (app.due_diligence_url) docsHtml += makeLink(app.due_diligence_url, 'DD Report');
+  if (app.last_term_sheet_url) docsHtml += makeLink(app.last_term_sheet_url, 'Term Sheet');
+  if (!docsHtml) docsHtml = '<span style="color:#999;">—</span>';
 
   const formatVal = (val) => val ? val : '—';
   const formatCurrency = (val) => val ? Number(val).toLocaleString() : '—';
   
-  document.getElementById('modalContent').innerHTML = `
+  document.getElementById('modalContent').innerHTML = \`
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; line-height:1.5;">
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Year Founded</strong><br/> ${formatVal(app.year_founded)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Website</strong><br/> ${app.website_link ? `<a href="${app.website_link}" target="_blank" style="color:var(--accent);text-decoration:underline;">${app.website_link}</a>` : '—'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Year Founded</strong><br/> \${formatVal(app.year_founded)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Website</strong><br/> \${app.website_link ? \`<a href="\${app.website_link}" target="_blank" style="color:var(--accent);text-decoration:underline;">\${app.website_link}</a>\` : '—'}</div>
       
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Products / Overview</strong><br/> ${formatVal(app.products_overview)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Products / Overview</strong><br/> \${formatVal(app.products_overview)}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Annual Sales</strong><br/> ${formatCurrency(app.annual_sales)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Total Funding Raised</strong><br/> ${formatCurrency(app.total_funding_raised)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Annual Sales</strong><br/> \${formatCurrency(app.annual_sales)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Total Funding Raised</strong><br/> \${formatCurrency(app.total_funding_raised)}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">TRL Level</strong><br/> ${formatVal(app.trl_level)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Govt Backed Orders</strong><br/> ${app.govt_backed_orders ? 'Yes (' + formatCurrency(app.govt_orders_amount) + ')' : 'No'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">TRL Level</strong><br/> \${formatVal(app.trl_level)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Govt Backed Orders</strong><br/> \${app.govt_backed_orders ? 'Yes (' + formatCurrency(app.govt_orders_amount) + ')' : 'No'}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Granted</strong><br/> ${app.patent_granted ? 'Yes' : 'No'}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Details</strong><br/> ${formatVal(app.patent_details)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Granted</strong><br/> \${app.patent_granted ? 'Yes' : 'No'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Details</strong><br/> \${formatVal(app.patent_details)}</div>
       
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Founder's Past Experience</strong><br/> ${formatVal(app.founders_experience)}</div>
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Existing Investors</strong><br/> ${formatVal(app.existing_investors)}</div>
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Why should we fund your company?</strong><br/> ${formatVal(app.why_fund_us)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Founder's Past Experience</strong><br/> \${formatVal(app.founders_experience)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Existing Investors</strong><br/> \${formatVal(app.existing_investors)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Why should we fund your company?</strong><br/> \${formatVal(app.why_fund_us)}</div>
       
       <div style="grid-column: 1 / -1; margin-top:10px; padding-top:20px; border-top:1px solid var(--line);">
         <strong style="color:var(--muted);font-size:12px;text-transform:uppercase;display:block;margin-bottom:8px;">Documents</strong>
-        <div>${docsHtml}</div>
+        <div>\${docsHtml}</div>
       </div>
     </div>
-  `;
+  \`;
   
   document.getElementById('detailModal').style.display = 'flex';
 }
@@ -243,18 +265,14 @@ async function loadAdminData() {
       const valuationText = app.company_valuation ? Number(app.company_valuation).toLocaleString() : '—';
       const askText = app.funding_raising ? Number(app.funding_raising).toLocaleString() : '—';
       
-      let docsHtml = '';
-      const getUrl = (path) => supabaseClient.storage.from('application-documents').getPublicUrl(path).data?.publicUrl;
+      const makeLink = (path, label) => {
+        return `<a href="${getFileUrl(path)}" onclick="openDoc(event, '${path}')" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:underline; display:inline-block; margin-right:8px; margin-bottom:4px;">📄 Open ${label} ↗</a>`;
+      };
       
-      if (app.pitch_deck_url) {
-        docsHtml += `<a href="${getUrl(app.pitch_deck_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">📄 Deck ↗</a>`;
-      }
-      if (app.due_diligence_url) {
-        docsHtml += `<a href="${getUrl(app.due_diligence_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">DD Report ↗</a>`;
-      }
-      if (app.last_term_sheet_url) {
-        docsHtml += `<a href="${getUrl(app.last_term_sheet_url)}" target="_blank" rel="noopener noreferrer" class="doc-pill">Term Sheet ↗</a>`;
-      }
+      let docsHtml = '';
+      if (app.pitch_deck_url) docsHtml += makeLink(app.pitch_deck_url, 'Deck');
+      if (app.due_diligence_url) docsHtml += makeLink(app.due_diligence_url, 'DD Report');
+      if (app.last_term_sheet_url) docsHtml += makeLink(app.last_term_sheet_url, 'Term Sheet');
       if (!docsHtml) docsHtml = '<span style="color:#999;">—</span>';
 
       tr.innerHTML = 
