@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -35,8 +35,6 @@
   .login-error{display:none;margin-top:14px;padding:12px;background:#f5ddd5;color:#8c3a2b;font-size:13px}
   .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;text-transform:uppercase;font-weight:600;background:#ece8e1}
   .badge.pending{background:#fff3cd;color:#856404}
-  .doc-pill{display:inline-block;padding:4px 10px;margin:2px;border-radius:999px;font-size:11px;font-weight:600;background:#ece8e1;color:var(--accent);text-decoration:none;border:1px solid #d8d0c6;white-space:nowrap;transition:background 0.2s;}
-  .doc-pill:hover{background:#e3dece;}
   @media(max-width:820px){
     .navlinks{display:none}.section-head{display:block}
   }
@@ -209,32 +207,32 @@ function viewDetails(index) {
   const formatVal = (val) => val ? val : '—';
   const formatCurrency = (val) => val ? Number(val).toLocaleString() : '—';
   
-  document.getElementById('modalContent').innerHTML = \`
+  document.getElementById('modalContent').innerHTML = `
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; line-height:1.5;">
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Year Founded</strong><br/> \${formatVal(app.year_founded)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Website</strong><br/> \${app.website_link ? \`<a href="\${app.website_link}" target="_blank" style="color:var(--accent);text-decoration:underline;">\${app.website_link}</a>\` : '—'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Year Founded</strong><br/> ${formatVal(app.year_founded)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Website</strong><br/> ${app.website_link ? `<a href="${app.website_link}" target="_blank" style="color:var(--accent);text-decoration:underline;">${app.website_link}</a>` : '—'}</div>
       
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Products / Overview</strong><br/> \${formatVal(app.products_overview)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Products / Overview</strong><br/> ${formatVal(app.products_overview)}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Annual Sales</strong><br/> \${formatCurrency(app.annual_sales)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Total Funding Raised</strong><br/> \${formatCurrency(app.total_funding_raised)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Annual Sales</strong><br/> ${formatCurrency(app.annual_sales)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Total Funding Raised</strong><br/> ${formatCurrency(app.total_funding_raised)}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">TRL Level</strong><br/> \${formatVal(app.trl_level)}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Govt Backed Orders</strong><br/> \${app.govt_backed_orders ? 'Yes (' + formatCurrency(app.govt_orders_amount) + ')' : 'No'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">TRL Level</strong><br/> ${formatVal(app.trl_level)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Govt Backed Orders</strong><br/> ${app.govt_backed_orders ? 'Yes (' + formatCurrency(app.govt_orders_amount) + ')' : 'No'}</div>
       
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Granted</strong><br/> \${app.patent_granted ? 'Yes' : 'No'}</div>
-      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Details</strong><br/> \${formatVal(app.patent_details)}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Granted</strong><br/> ${app.patent_granted ? 'Yes' : 'No'}</div>
+      <div><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Patent Details</strong><br/> ${formatVal(app.patent_details)}</div>
       
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Founder's Past Experience</strong><br/> \${formatVal(app.founders_experience)}</div>
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Existing Investors</strong><br/> \${formatVal(app.existing_investors)}</div>
-      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Why should we fund your company?</strong><br/> \${formatVal(app.why_fund_us)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Founder's Past Experience</strong><br/> ${formatVal(app.founders_experience)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Existing Investors</strong><br/> ${formatVal(app.existing_investors)}</div>
+      <div style="grid-column: 1 / -1;"><strong style="color:var(--muted);font-size:12px;text-transform:uppercase;">Why should we fund your company?</strong><br/> ${formatVal(app.why_fund_us)}</div>
       
       <div style="grid-column: 1 / -1; margin-top:10px; padding-top:20px; border-top:1px solid var(--line);">
         <strong style="color:var(--muted);font-size:12px;text-transform:uppercase;display:block;margin-bottom:8px;">Documents</strong>
-        <div>\${docsHtml}</div>
+        <div>${docsHtml}</div>
       </div>
     </div>
-  \`;
+  `;
   
   document.getElementById('detailModal').style.display = 'flex';
 }
