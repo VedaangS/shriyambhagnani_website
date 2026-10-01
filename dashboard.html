@@ -73,7 +73,10 @@
 <div id="detailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding: 20px;" onclick="if(event.target===this) closeModal()">
   <div style="background:var(--white); border-radius:12px; width:min(700px, 100%); max-height:85vh; overflow-y:auto; position:relative; padding:32px; border:1px solid var(--line); box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
     <button onclick="closeModal()" style="position:absolute; top:24px; right:24px; background:none; border:none; font-size:28px; cursor:pointer; color:var(--muted); padding:0; line-height:1;">&times;</button>
-    <h3 id="modalCompany" style="margin-top:0; margin-bottom:24px; font-family:Georgia,serif; font-size:26px; color:var(--dark);">Company Name</h3>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-right:30px;">
+      <h3 id="modalCompany" style="margin:0; font-family:Georgia,serif; font-size:26px; color:var(--dark);">Company Name</h3>
+      <div id="modalStatusContainer" style="margin-top:4px;"></div>
+    </div>
     <div id="modalContent" style="display:grid; gap:20px; font-size:14px; color:var(--ink);">
       <!-- Content injected here -->
     </div>
@@ -170,6 +173,55 @@ function closeModal() {
   document.getElementById('detailModal').style.display = 'none';
 }
 
+function getStatusSelectHtml(appId, currentStatus) {
+  const status = currentStatus || 'pending';
+  return `<select class="status-select ${status}" data-id="${appId}" onchange="updateAppStatus('${appId}', this.value, this)">
+    <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
+    <option value="under_review" ${status === 'under_review' ? 'selected' : ''}>Under Review</option>
+    <option value="shortlisted" ${status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
+    <option value="rejected" ${status === 'rejected' ? 'selected' : ''}>Rejected</option>
+  </select>`;
+}
+
+async function updateAppStatus(id, newStatus, selectElement) {
+  const selects = document.querySelectorAll(`.status-select[data-id="${id}"]`);
+  selects.forEach(el => {
+    el.disabled = true;
+    el.style.opacity = '0.6';
+  });
+
+  try {
+    const { error } = await supabaseClient
+      .from('startup_applications')
+      .update({ status: newStatus })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    const appIndex = cachedApplications.findIndex(a => a.id === id);
+    if (appIndex !== -1) {
+      cachedApplications[appIndex].status = newStatus;
+    }
+
+    selects.forEach(el => {
+      el.className = `status-select ${newStatus}`;
+      el.value = newStatus;
+    });
+  } catch (err) {
+    alert("Failed to update status: " + err.message);
+    const app = cachedApplications.find(a => a.id === id);
+    const oldStatus = app ? app.status || 'pending' : 'pending';
+    selects.forEach(el => {
+      el.value = oldStatus;
+    });
+  }
+
+  selects.forEach(el => {
+    el.disabled = false;
+    el.style.opacity = '1';
+  });
+}
+
 function getFileUrl(path) {
   if (!path) return null;
   const { data } = supabaseClient.storage.from('application-documents').getPublicUrl(path);
@@ -193,6 +245,7 @@ async function openDoc(event, path) {
 function viewDetails(index) {
   const app = cachedApplications[index];
   document.getElementById('modalCompany').textContent = app.company_name || 'Application Details';
+  document.getElementById('modalStatusContainer').innerHTML = getStatusSelectHtml(app.id, app.status);
   
   const makeLink = (path, label) => {
     return `<a href="${getFileUrl(path)}" onclick="openDoc(event, '${path}')" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:underline; display:inline-block; margin-right:12px; margin-bottom:4px;">📄 Open ${label} ↗</a>`;
@@ -281,7 +334,7 @@ async function loadAdminData() {
         '<td style=\"padding:14px;\">' + valuationText + '</td>' +
         '<td style=\"padding:14px;\">' + askText + '</td>' +
         '<td style=\"padding:14px;\">' + docsHtml + '</td>' +
-        '<td style=\"padding:14px;\"><span class=\"badge pending\">' + (app.status || 'pending') + '</span></td>' +
+        '<td style=\"padding:14px;\">' + getStatusSelectHtml(app.id, app.status) + '</td>' +
         '<td style=\"padding:14px;\"><button class=\"btn\" style=\"padding:6px 12px; font-size:12px;\" onclick=\"viewDetails(' + index + ')\">View Full Pitch</button></td>';
 
       tbody.appendChild(tr);
